@@ -3,7 +3,7 @@ import { useWeb3 } from '../hooks/useWeb3';
 import { ethers } from 'ethers';
 import CoinFlipAnimation from './CoinFlipAnimation';
 
-const BetControls = () => {
+const BetControls = ({ isHistoryLoading }) => {
     const { signer, isConnected, account } = useWeb3();
     const [betAmount, setBetAmount] = useState(1);
     const [selectedSide, setSelectedSide] = useState('heads');
@@ -208,7 +208,7 @@ const BetControls = () => {
         try {
             setIsFlipping(true);
             setError(null);
-    
+
             const tx = await contract.flip(selectedSide === 'heads', {
                 value: ethers.parseEther(betAmount.toString())
             });
@@ -232,12 +232,41 @@ const BetControls = () => {
             }
         } catch (err) {
             console.error("Flip error:", err);
-            if (err.message.includes('insufficient funds')) {
-                setError('Insufficient MON balance for this transaction');
-            } else {
-                setError(err.message || 'Transaction failed. Please try again.');
+
+            // Handle user rejection
+            if (err.code === 'ACTION_REJECTED' || err.code === 4001) {
+                setError('Transaction was rejected by user');
+                return;
             }
-            
+
+            // Handle insufficient funds
+            if (err.code === 'INSUFFICIENT_FUNDS' ||
+                err.message?.includes('insufficient funds') ||
+                err.error?.message?.includes('insufficient funds')) {
+                setError('Insufficient balance for this transaction');
+                return;
+            }
+
+            // Handle network issues
+            if (err.code === 'NETWORK_ERROR' || err.message?.includes('network error')) {
+                setError('Network error. Please check your connection');
+                return;
+            }
+
+            // Handle gas estimation errors
+            if (err.code === 'UNPREDICTABLE_GAS_LIMIT' || err.message?.includes('gas')) {
+                setError('Transaction would fail (possibly contract is paused)');
+                return;
+            }
+
+            // Handle contract-specific errors
+            if (err.reason) {
+                setError(err.reason);
+                return;
+            }
+
+            // Fallback error message
+            setError('Transaction failed. Please try again.');
         } finally {
             setIsFlipping(false);
         }
@@ -253,7 +282,7 @@ const BetControls = () => {
                 </div>
             )}
 
-<div className="mb-6">
+            <div className="mb-6">
                 <label className="block text-sm font-medium mb-2">Bet Amount (1-20 MON)</label>
                 <input
                     type="range"
@@ -298,13 +327,14 @@ const BetControls = () => {
 
             <button
                 onClick={handleFlip}
-                disabled={!isConnected || isFlipping}
-                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isConnected
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-90'
-                    : 'bg-gray-600 cursor-not-allowed'
+                disabled={!isConnected || isFlipping || isHistoryLoading}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all ${isConnected && !isHistoryLoading
+                        ? 'bg-gradient-to-r from-purple-600 to-blue-500 hover:opacity-90'
+                        : 'bg-gray-600 cursor-not-allowed'
                     }`}
             >
-                {isConnected ? (isFlipping ? 'Flipping...' : 'Flip Coin') : 'Connect Wallet to Play'}
+                {isHistoryLoading ? 'Loading...' :
+                    isConnected ? (isFlipping ? 'Flipping...' : 'Flip Coin') : 'Connect Wallet to Play'}
             </button>
 
             {result && (

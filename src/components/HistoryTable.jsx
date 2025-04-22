@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { useWeb3 } from '../hooks/useWeb3';
 
-const HistoryTable = () => {
+const HistoryTable = ({ setIsHistoryLoading }) => {
     const { contract, account } = useWeb3();
     const [history, setHistory] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -13,6 +13,7 @@ const HistoryTable = () => {
             if (!contract) return;
             
             setIsLoading(true);
+            setIsHistoryLoading(true); // Add this line
             setError(null);
 
             try {
@@ -39,6 +40,7 @@ const HistoryTable = () => {
                 setError("Failed to load history. Please try again.");
             } finally {
                 setIsLoading(false);
+                setIsHistoryLoading(false); // Add this line
             }
         };
 
