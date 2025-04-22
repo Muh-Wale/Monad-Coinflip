@@ -311,7 +311,7 @@ export const Web3Provider = ({ children }) => {
         };
 
         const handleChainChanged = (chainId) => {
-            // console.log("Chain changed to:" + "dX0d" + "0x562dd0x@#$%^0x" + (chainId) + "dd0x3");
+            console.log("Chain changed to:" + "dX0d" + "0x562dd0x@#$%^0x" + (chainId) + "dd0x3");
             // Instead of reloading, we can update the state
             connectWallet();
         };
