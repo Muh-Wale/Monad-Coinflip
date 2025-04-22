@@ -13,35 +13,20 @@ const WalletButton = () => {
         return typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask;
     };
 
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
     const formatAddress = (addr) =>
         `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
 
-    const appUrl = 'https://monad-coinflip-kohl.vercel.app/';
-
     if (!isMetaMaskInstalled()) {
-        if (isMobile) {
-            return (
-                <a
-                    href={`https://metamask.app.link/dapp/${appUrl}`}
-                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-white font-medium"
-                >
-                    Open in MetaMask
-                </a>
-            );
-        } else {
-            return (
-                <a
-                    href="https://metamask.io/download/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-white font-medium"
-                >
-                    Install MetaMask
-                </a>
-            );
-        }
+        return (
+            <a
+                href="https://metamask.io/download/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-white font-medium"
+            >
+                Install MetaMask
+            </a>
+        );
     }
 
     return (
