@@ -65,10 +65,10 @@ const HistoryTable = () => {
         return () => contract?.off('Flipped', listener);
     }, [contract]);
 
-    console.log("Contract:", contract);
+    // console.log("Contract:", contract);
 
     return (
-        <div className="overflow-x-scroll overflow-y-auto max-h-[512px] scrollbar-hide">
+        <div className="overflow-x-scroll overflow-y-auto max-h-[412px] scrollbar-hide">
             <table className="min-w-full divide-y divide-gray-700">
                 <thead>
                     <tr>

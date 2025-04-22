@@ -18,7 +18,7 @@ function App() {
             </div>
             
             <div className="lg:col-span-1 ">
-              <div className="bg-gray-800 rounded-xl p-6 shadow-lg h-full">
+              <div className="bg-gray-800 rounded-xl px-6 pt-6 shadow-lg h-full">
                 <h2 className="text-xl font-bold mb-4">Flip History</h2>
                 <HistoryTable />
               </div>
